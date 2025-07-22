@@ -1,0 +1,33 @@
+This infrastructure hosts www.foobar.com using three web servers, secured with three firewalls, an SSL certificate for HTTPS, and three monitoring clients for a service like Sumo Logic.
+
+Infrastructure Layout
+Client: Users access www.foobar.com via a browser, initiating HTTPS requests.
+SSL Certification: An SSL certificate is applied at the load balancer to encrypt traffic to www.foobar.com.
+Load Balancer (HAProxy): Distributes HTTPS traffic across three web servers (Server 1, Server 2, Server 3) for load balancing and high availability.
+Firewall 1: Positioned between the internet and the load balancer, it allows only HTTPS traffic (port 443) to secure the entry point.
+Firewall 2: Sits between the load balancer and web servers, restricting traffic to HTTPS from the load balancer to the servers.
+Firewall 3: Controls traffic between web servers and the monitoring system, allowing only monitoring data to flow.
+Web Servers (Server 1, Server 2, Server 3): Each runs Nginx (web server), an active application, and connects to a MySQL database. Each has a monitoring client (e.g., Sumo Logic agent) to collect data.
+Monitoring Clients: Installed on each web server, they send logs and metrics to a monitoring system.
+Local DNS Server: Resolves internal domain names.
+External DNS Server: Resolves public domain names for www.foobar.com.
+MySQL: A single database server handles reads and writes for all web servers.
+Explanations of Additional Elements
+Local DNS Server: Added to manage internal name resolution, reducing external DNS dependency and improving performance.
+External DNS Server: Ensures www.foobar.com is globally resolvable, directing traffic to the load balancer.
+MySQL: Included to store and manage the website's data, supporting the application layer.
+Purpose of Firewalls
+Firewalls (1, 2, 3) restrict traffic to specific ports (e.g., 443 for HTTPS), preventing unauthorized access, blocking malicious traffic, and segmenting the network for enhanced security.
+Why Traffic is Served Over HTTPS
+HTTPS encrypts data between the client and server, protecting sensitive information (e.g., user data, credentials) from interception and ensuring privacy and integrity.
+Purpose of Monitoring
+Monitoring tracks performance (e.g., uptime, response time), detects issues (e.g., errors, security breaches), and provides insights for optimization.
+How Monitoring Tool Collects Data
+Monitoring clients on each web server (e.g., Sumo Logic agents) collect logs, metrics (CPU, memory), and events, then send this data to a central monitoring server for analysis.
+Monitoring Web Server QPS (Queries Per Second)
+To monitor QPS, configure the monitoring client to track Nginx access logs or use a tool like Sumo Logic to aggregate and visualize request rates. Set up a custom metric or dashboard to display QPS trends, enabling identification of traffic spikes or performance bottlenecks.
+Issues with the Infrastructure
+Terminating SSL at the Load Balancer Level: This creates a security risk because traffic between the load balancer and web servers is unencrypted. If an attacker breaches the internal network, they can access plaintext data. Solution: Enable end-to-end encryption (e.g., TLS passthrough or re-encryption to web servers).
+Single MySQL Server for Writes: Having only one MySQL server capable of accepting writes is a single point of failure. If it fails, the database becomes unavailable, halting the application. Solution: Implement replication with a primary-write and secondary-read servers, or use a clustered database.
+Servers with All Same Components: Combining the web server (Nginx), application server, and database (MySQL) on each server reduces scalability and fault tolerance. A failure in one component (e.g., database) affects the entire server. Solution: Separate concerns into dedicated tiers (e.g., web servers, app servers, database servers) to isolate failures and scale independently.
+link: https://imgur.com/f5G7G9V

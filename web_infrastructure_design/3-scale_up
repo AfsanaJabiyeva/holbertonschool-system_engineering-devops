@@ -1,0 +1,15 @@
+You're adding a second HAProxy to eliminate the single point of failure in your load balancing layer.
+If one load balancer crashes or needs maintenance, the second one takes over seamlessly, ensuring users can still access your application without downtime. These two HAProxy 
+instances typically share a virtual IP address managed by a tool like Keepalived. This setup enhances the availability and fault tolerance of your infrastructure.
+You’re separating the web server from the rest of the application to make your system more modular and scalable. By having dedicated web servers running something like 
+Nginx, you offload static file serving, SSL termination, and proxying duties away from the app server. This not only improves performance but also allows you to scale the web 
+tier independently if traffic increases.
+
+Your application logic now lives on its own server, separate from the web server. This is a clean architectural practice because it separates concerns—your app logic is 
+no longer sharing resources with the web server. It’s easier to monitor, deploy, and scale your application tier this way, especially when your codebase or traffic load 
+grows.
+
+Finally, the database is placed on its own dedicated server. This avoids the resource contention that would occur if it shared a machine with your app or web layer. The database
+ can now be optimized for I/O and query performance, secured properly (only accessible from app servers), and backed up or replicated more efficiently. This also makes scaling 
+the other tiers easier since the database remains centralized and consistent.
+link: https://imgur.com/DqfMh5q

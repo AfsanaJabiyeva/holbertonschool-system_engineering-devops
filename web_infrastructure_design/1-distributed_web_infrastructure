@@ -1,0 +1,38 @@
+1. For every additional element, why are you adding it?
+
+- Load Balancer (HAProxy): Added to distribute traffic between multiple servers. This improves performance and reduces the chance of one server getting overloaded.
+- Second Server: Added to avoid a single point of failure and to help handle more users at the same time.
+- Duplicated Web/App/DB Stack: Both servers have Nginx, app files, and a MySQL DB to serve requests independently if one goes down.
+
+2. What distribution algorithm is your load balancer configured with and how does it work?
+
+- Algorithm: Round Robin
+- How it works: The load balancer sends each new request to the next server in line, one after another, in a repeating loop. This balances traffic evenly between servers.
+
+3. Is your load-balancer enabling an Active-Active or Active-Passive setup? Explain the difference.
+
+- The setup is Active-Active.
+- Active-Active: Both servers are running and handling traffic at the same time.
+- Active-Passive: One server handles everything while the other stays idle unless the first one fails.
+
+4. How does a database Primary-Replica (Master-Slave) cluster work?
+
+- The Primary (Master) database handles all writes (insert, update, delete).
+- The Replica (Slave) database copies the data from the Primary and handles read-only requests (select).
+- This reduces the load on the Primary and helps with backup and data availability.
+
+5. What is the difference between the Primary node and the Replica node in regard to the application?
+
+- The application sends write operations (e.g., user sign-up) to the Primary node.
+- It sends read operations (e.g., viewing a profile) to the Replica node.
+- The Replica is synced from the Primary but cannot be written to directly by the application.
+
+6. What are the issues with this infrastructure?
+
+- Single Point of Failure (SPOF): The load balancer is a SPOF. If it fails, users cannot reach the servers.
+- Security Issues:
+   - No firewall: The servers are open to all traffic, including potential attacks.
+   - No HTTPS: Data between user and server is not encrypted, so it can be intercepted.
+- No Monitoring: There’s no system to alert you if a server crashes or performance drops. You wouldn’t know there’s a problem unless you check manually.
+
+link: https://imgur.com/z9ZY8Xk
